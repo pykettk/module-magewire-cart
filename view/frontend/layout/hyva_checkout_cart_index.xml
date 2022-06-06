@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © element119. All rights reserved.
+ * See LICENCE.txt for licence details.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <!-- Add Magewire Cart Elements -->
+        <referenceContainer name="content">
+            <block name="magewire.cart"
+                   class="Magento\Checkout\Block\Cart"
+                   template="Element119_MagewireCart::cart-main.phtml"
+                   before="-"
+                   cacheable="false">
+                <container name="magewire.cart.content">
+                    <!-- Cart Items -->
+                    <block name="magewire.cart.items"
+                           class="Magento\Checkout\Block\Cart\Grid"
+                           template="Element119_MagewireCart::cart/items.phtml">
+                        <arguments>
+                            <argument name="magewire" xsi:type="object">
+                                Element119\MagewireCart\Magewire\Items
+                            </argument>
+                        </arguments>
+
+                        <block name="magewire.cart.item"
+                               class="Magento\Checkout\Block\Cart\Item\Renderer"
+                               template="Element119_MagewireCart::cart/item/default.phtml"/>
+                    </block>
+                </container>
+            </block>
+        </referenceContainer>
+
+        <!-- Re-Use Hyvä Cart Elements -->
+        <move element="checkout.cart.noitems" destination="magewire.cart" after="-"/>
+
+        <!-- Remove Hyvä Cart Elements -->
+        <referenceBlock name="checkout.cart" remove="true"/>
+    </body>
+</page>

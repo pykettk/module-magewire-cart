@@ -1,0 +1,187 @@
+<?php
+/**
+ * Copyright © element119. All rights reserved.
+ * See LICENCE.txt for licence details.
+ */
+declare(strict_types=1);
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\HeroiconsSolid;
+use Magento\Checkout\Block\Cart\Item\Renderer as CartItemRenderer;
+use Magento\Framework\Escaper;
+
+/** @var Escaper $escaper */
+/** @var CartItemRenderer $block */
+
+/** @var ViewModelRegistry $viewModels */
+/** @var HeroiconsSolid $heroicons */
+$heroIcons = $viewModels->require(HeroiconsSolid::class);
+
+$item = $block->getItem();
+$itemId = (int)$item->getId();
+?>
+<tbody class="cart item bg-white even:bg-container-darker">
+    <tr class="item-info align-top text-left lg:text-right flex flex-wrap lg:table-row">
+        <!-- Image -->
+        <td data-th="<?= $escaper->escapeHtml(__('Item')); ?>"
+            class="col item pt-6 px-4 flex flex-wrap gap-8 text-left w-full lg:w-auto"
+            wire:ignore>
+            <?php if ($block->hasProductUrl()): ?>
+                <a href="<?= $escaper->escapeUrl($block->getProductUrl()); ?>"
+                   title="<?= $escaper->escapeHtmlAttr($block->getProductName()); ?>"
+                   tabindex="-1"
+                   class="product-item-photo flex-shrink-0">
+            <?php else: ?>
+                <span class="product-item-photo flex-shrink-0">
+            <?php endif; ?>
+
+            <?= $block->getImage($block->getProductForThumbnail(), 'cart_page_product_thumbnail')
+                ->setTemplate('Magento_Catalog::product/image.phtml')
+                ->toHtml(); ?>
+
+            <?php if ($block->hasProductUrl()): ?>
+                </a>
+            <?php else: ?>
+                </span>
+            <?php endif; ?>
+
+            <div class="product-item-details flex-grow">
+                <strong class="product-item-name break-all">
+                    <?php if ($block->hasProductUrl()): ?>
+                        <a href="<?= $escaper->escapeUrl($block->getProductUrl()); ?>">
+                            <?= $escaper->escapeHtml($block->getProductName()); ?>
+                        </a>
+                    <?php else: ?>
+                        <?= $escaper->escapeHtml($block->getProductName()); ?>
+                    <?php endif; ?>
+                </strong>
+
+                <?php if ($options = $block->getOptionList()): ?>
+                    <dl class="item-options w-full break-all mt-4 pb-2 text-sm clearfix">
+                        <?php foreach ($options as $option): ?>
+                            <?php $formatedOptionValue = $block->getFormatedOptionValue($option); ?>
+
+                            <dt class="font-bold float-left clear-left mr-2 mb-2">
+                                <?= $escaper->escapeHtml($option['label']); ?>:
+                            </dt>
+                            <dd class="float-left">
+                                <?php if (isset($formatedOptionValue['full_view'])): ?>
+                                    <?= $escaper->escapeHtml($formatedOptionValue['full_view']); ?>
+                                <?php else: ?>
+                                    <?= $escaper->escapeHtml($formatedOptionValue['value'], ['span', 'a']); ?>
+                                <?php endif; ?>
+                            </dd>
+                        <?php endforeach; ?>
+                    </dl>
+                <?php endif; ?>
+
+                <?php if ($messages = $block->getMessages()): ?>
+                    <?php foreach ($messages as $message): ?>
+                        <div class= "cart item message <?= $escaper->escapeHtmlAttr($message['type']); ?>">
+                            <div>
+                                <?= $escaper->escapeHtml($message['text']); ?>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+
+                <?php $addInfoBlock = $block->getProductAdditionalInformationBlock(); ?>
+
+                <?php if ($addInfoBlock): ?>
+                    <?= $addInfoBlock->setItem($item)->toHtml(); ?>
+                <?php endif;?>
+            </div>
+        </td>
+
+        <!-- Price -->
+        <td class="col price pt-6 px-4 block w-full sm:w-1/3 lg:w-auto lg:table-cell"
+            wire:ignore>
+            <span class="lg:hidden font-bold mt-2">
+                <?= $escaper->escapeHtml(__('Price')); ?>
+            </span>
+
+            <?= $block->getUnitPriceHtml($item); ?>
+        </td>
+
+        <!-- Qty -->
+        <td class="col qty pt-6 lg:pt-2 px-4 block w-full sm:w-1/3 lg:w-auto lg:table-cell">
+            <span class="lg:hidden font-bold">
+                <?= $escaper->escapeHtml(__('Qty')); ?>
+            </span>
+            <div class="field qty">
+                <div class="control qty">
+                    <label for="cart-<?= $escaper->escapeHtmlAttr($item->getId()); ?>-qty">
+                        <span class="label sr-only">
+                            <?= $escaper->escapeHtml(__('Qty')); ?>
+                        </span>
+                        <span class="flex items-center justify-end">
+                            <span class="m-2 cursor-pointer"
+                                  data-role="decrease-cart-item-qty"
+                                  title="<?= $escaper->escapeHtmlAttr(__('Increase Qty')); ?>"
+                                  wire:click="updateQty(<?= $itemId; ?>, false)">
+                                <?= $heroIcons->minusHtml('w-6 h-6'); ?>
+                            </span>
+                            <span class="qty form-input px-2 py-2 w-20 text-center"
+                                  data-role="cart-item-qty"
+                                  title="<?= $escaper->escapeHtmlAttr(__('Qty')); ?>"
+                                  x-text="$wire.items[<?= $itemId; ?>].qty">
+                            </span>
+                            <span class="m-2 cursor-pointer"
+                                  data-role="increase-cart-item-qty"
+                                  title="<?= $escaper->escapeHtmlAttr(__('Decrease Qty')); ?>"
+                                  wire:click="updateQty(<?= $itemId; ?>, true)">
+                                <?= $heroIcons->plusHtml('w-6 h-6'); ?>
+                            </span>
+                        </span>
+                    </label>
+                </div>
+            </div>
+        </td>
+
+        <!-- Subtotal -->
+        <td class="col subtotal pt-6 px-4 block w-full sm:w-1/3 lg:w-auto lg:table-cell">
+            <span class="lg:hidden font-bold">
+                <?= $escaper->escapeHtml(__('Subtotal')); ?>
+            </span>
+            <?= $block->getRowTotalHtml($item); ?>
+        </td>
+    </tr>
+
+    <!-- Actions -->
+    <tr class="item-actions">
+        <td colspan="4">
+            <div class="flex justify-end gap-4 p-4 pt-2">
+                <!-- Edit Item -->
+                <?php if (($product = $item->getProduct()) && $product->isVisibleInSiteVisibility()): ?>
+                    <?php $configureUrl = $block->getUrl(
+                        'checkout/cart/configure',
+                        [
+                            'id' => $itemId,
+                            'product_id' => $product->getId(),
+                        ]
+                    ); ?>
+
+                    <a class="action action-edit"
+                       href="<?= $escaper->escapeUrl($configureUrl); ?>"
+                       title="<?= $escaper->escapeHtmlAttr(__('Edit item parameters')); ?>">
+                        <?= $heroIcons->pencilHtml('h-6 w-6'); ?>
+                        <span class="sr-only">
+                            <?= $escaper->escapeHtml(__('Edit')); ?>
+                        </span>
+                    </a>
+                <?php endif; ?>
+
+                <!-- Remove Item -->
+                <a href="#"
+                   title="<?= $escaper->escapeHtml(__('Remove item')); ?>"
+                   class="action action-delete"
+                   wire:click="removeFromCart(<?= $itemId; ?>)">
+                    <?= $heroIcons->trashHtml('w-6 h-6'); ?>
+                    <span class="sr-only">
+                        <?= $escaper->escapeHtml(__('Remove item')); ?>
+                    </span>
+                </a>
+            </div>
+        </td>
+    </tr>
+</tbody>

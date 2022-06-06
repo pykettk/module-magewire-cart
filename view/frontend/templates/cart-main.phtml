@@ -1,0 +1,20 @@
+<?php
+/**
+ * Copyright © element119. All rights reserved.
+ * See LICENCE.txt for licence details.
+ */
+declare(strict_types=1);
+
+use Magento\Checkout\Block\Cart;
+
+/** @var Cart $block */
+?>
+<div class="cart-form clearfix">
+    <?php if ($block->getItemsCount()): ?>
+        <div class="w-full">
+            <?= $block->getChildHtml('magewire.cart.content'); ?>
+        </div>
+    <?php else: ?>
+        <?= $block->getChildHtml('no-items'); ?>
+    <?php endif; ?>
+</div>

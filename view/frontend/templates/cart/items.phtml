@@ -1,0 +1,48 @@
+<?php
+/**
+ * Copyright © element119. All rights reserved.
+ * See LICENCE.txt for licence details.
+ */
+declare(strict_types=1);
+
+use Element119\MagewireCart\Magewire\Items as CartItemsMagewireComponent;
+use Magento\Checkout\Block\Cart\Grid;
+use Magento\Framework\Escaper;
+use Magento\Quote\Model\Quote\Item as QuoteItem;
+
+/** @var Escaper $escaper */
+/** @var Grid $block */
+/** @var CartItemsMagewireComponent $itemsComponent */
+$itemsComponent = $block->getMagewire();
+?>
+<div x-data
+     class="w-full lg:w-3/4 float-left lg:order-1 lg:pr-8">
+    <table id="shopping-cart-table"
+           class="cart items data table w-full table-row-items">
+        <caption class="table-caption sr-only">
+            <?= $escaper->escapeHtml(__('Shopping Cart Items')); ?>
+        </caption>
+        <thead class="hidden lg:table-header-group">
+            <tr class="text-right">
+                <th class="col item text-left pt-4 pb-2 px-4" scope="col">
+                    <?= $escaper->escapeHtml(__('Item')); ?>
+                </th>
+                <th class="col price pt-4 pb-2 px-4" scope="col">
+                    <?= $escaper->escapeHtml(__('Price')); ?>
+                </th>
+                <th class="col qty pt-4 pb-2 px-4" scope="col">
+                    <?= $escaper->escapeHtml(__('Qty')); ?>
+                </th>
+                <th class="col subtotal pt-4 pb-2 px-4" scope="col">
+                    <?= $escaper->escapeHtml(__('Subtotal')); ?>
+                </th>
+            </tr>
+        </thead>
+        <?php /** @var QuoteItem $item */ ?>
+        <?php foreach ($block->getItems() as $item): ?>
+            <?= $block->getChildBlock('magewire.cart.item')
+                ->setItem($item)
+                ->toHtml(); ?>
+        <?php endforeach; ?>
+    </table>
+</div>
