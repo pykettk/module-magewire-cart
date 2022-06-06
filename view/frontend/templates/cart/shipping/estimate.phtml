@@ -1,0 +1,103 @@
+<?php
+/**
+ * Copyright © element119. All rights reserved.
+ * See LICENCE.txt for licence details.
+ */
+declare(strict_types=1);
+
+use Element119\MagewireCart\Magewire\Shipping as CartShippingMagewireComponent;
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+
+/** @var Escaper $escaper */
+/** @var Template $block */
+/** @var CartShippingMagewireComponent $shippingComponent */
+$shippingComponent = $block->getMagewire();
+?>
+<div>
+    <!-- Country -->
+    <div class="my-2" name="shippingAddress.country_id">
+        <label class="label" for="shipping-estimate-country">
+            <?= $escaper->escapeHtml(__('Country')); ?>
+
+            <select id="shipping-estimate-country"
+                    class="form-select w-full"
+                    name="country"
+                    aria-invalid="false"
+                    wire:model="selectedCountryId">
+                <option value=""> </option>
+
+                <?php foreach ($shippingComponent->countries as $index => $data): ?>
+                    <option value="<?= $escaper->escapeHtmlAttr($index); ?>"><?= $escaper->escapeHtml($data['label']); ?></option>
+                <?php endforeach; ?>
+            </select>
+        </label>
+    </div>
+
+    <!-- State/Province/Region -->
+    <div class="my-2" name="shippingAddress.region_id">
+        <label class="label" for="shipping-estimate-region">
+            <?= $escaper->escapeHtml(__('State/Province')) ?>
+
+            <?php if ($shippingComponent->regions): ?>
+                <select id="shipping-estimate-region"
+                        class="form-select w-full"
+                        name="region"
+                        wire:model="selectedRegionId">
+                    <option value=""><?= $escaper->escapeHtml(__('Please select a region, state or province.')); ?></option>
+
+                    <?php foreach ($shippingComponent->regions as $regionId => $data): ?>
+                        <option value="<?= $escaper->escapeHtmlAttr($regionId); ?>"><?= $escaper->escapeHtml($data['name']); ?></option>
+                    <?php endforeach; ?>
+                </select>
+            <?php else: ?>
+                <input class="form-input w-full"
+                       id="shipping-estimate-region"
+                       type="text"
+                       name="region"
+                       wire:model.lazy="region"/>
+            <?php endif; ?>
+        </label>
+    </div>
+
+    <!-- Post Code -->
+    <div class="my-2" name="shippingAddress.postcode">
+        <label class="label">
+            <?= $escaper->escapeHtml(__('Zip/Postal Code')); ?>
+
+            <input id="shipping-estimate-postcode"
+                   class="form-input w-full"
+                   type="text"
+                   name="postcode"
+                   wire:model.lazy="postcode"/>
+        </label>
+    </div>
+
+    <!-- Shipping Methods -->
+    <?php if ($shippingComponent->shippingMethods): ?>
+        <div class="my-2">
+            <?php foreach ($shippingComponent->shippingMethods as $methodCode => $method): ?>
+                <div class="my-2">
+                    <div class="font-semibold">
+                        <?= $escaper->escapeHtml($method['method_title']); ?>
+                    </div>
+                    <label class="flex items-center px-2">
+                        <input id="<?= $escaper->escapeHtmlAttr("shipping_method_{$method['method']}"); ?>"
+                               class="mr-2"
+                               type="radio"
+                               name="shipping-method"
+                               wire:click="setShippingMethod('<?= $escaper->escapeHtmlAttr($methodCode); ?>')"/>
+                        <div class="grid grid-cols-2 w-full">
+                            <div>
+                                <?= $escaper->escapeHtml($method['carrier_title']); ?>
+                            </div>
+                            <div x-text="hyva.formatPrice(<?= $escaper->escapeHtmlAttr($method['price']); ?>)"
+                                 wire:ignore>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
+</div>

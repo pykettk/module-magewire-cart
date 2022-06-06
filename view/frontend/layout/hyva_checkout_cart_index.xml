@@ -30,6 +30,23 @@
                                class="Magento\Checkout\Block\Cart\Item\Renderer"
                                template="Element119_MagewireCart::cart/item/default.phtml"/>
                     </block>
+
+                    <!-- Cart Summary -->
+                    <block name="magewire.cart.summary" template="Element119_MagewireCart::cart/summary.phtml">
+                        <!-- Shipping -->
+                        <block name="magewire.cart.shipping"
+                               class="Magento\Checkout\Block\Cart\Shipping"
+                               template="Element119_MagewireCart::cart/shipping.phtml"
+                               before="-">
+                            <block name="magewire.cart.shipping.content" template="Element119_MagewireCart::cart/shipping/estimate.phtml">
+                                <arguments>
+                                    <argument name="magewire" xsi:type="object">
+                                        Element119\MagewireCart\Magewire\Shipping
+                                    </argument>
+                                </arguments>
+                            </block>
+                        </block>
+                    </block>
                 </container>
             </block>
         </referenceContainer>

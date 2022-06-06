@@ -1,0 +1,67 @@
+<?php
+/**
+ * Copyright © element119. All rights reserved.
+ * See LICENCE.txt for licence details.
+ */
+declare(strict_types=1);
+
+use Magento\Checkout\Block\Cart\Shipping;
+use Magento\Framework\Escaper;
+
+/** @var Escaper $escaper */
+/** @var Shipping $block */
+?>
+<div x-data="{ showShippingEstimate: false }"
+     id="block-shipping"
+     class="flex flex-col pb-2 my-2 border-b-2 border-gray-300 estimate-shipping-form">
+    <div class="title"
+         data-role="title"
+         @click="showShippingEstimate = !showShippingEstimate">
+        <span class="flex justify-between w-full font-semibold whitespace-nowrap cursor-pointer select-none text-primary-lighter"
+              id="shipping-estimate-toggle"
+              role="heading"
+              aria-level="2">
+            <?= $escaper->escapeHtml($block->getQuote()->isVirtual()
+                ? __('Estimate Tax')
+                : __('Estimate Shipping and Tax')); ?>
+            <span class="block transform rotate-180"
+                  :class="{'rotate-180' : showShippingEstimate}">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     fill="none"
+                     viewBox="0 0 24 24"
+                     stroke="currentColor"
+                     class="w-6 h-6"
+                     width="25"
+                     height="25">
+                    <path stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M19 9l-7 7-7-7"/>
+                </svg>
+            </span>
+        </span>
+    </div>
+    <div id="block-summary"
+         class="content my-4 card"
+         x-cloak
+         x-show="showShippingEstimate"
+         data-role="content"
+         aria-labelledby="block-shipping-heading">
+        <div id="shipping-zip-form">
+            <div class="estimate">
+                <span class="legend sr-only">
+                    <?= $escaper->escapeHtml($block->getQuote()->isVirtual()
+                        ? __('Estimate Tax')
+                        : __('Estimate Shipping and Tax')); ?>
+                </span>
+                <p class="field note">
+                    <?= $escaper->escapeHtml($block->getQuote()->isVirtual()
+                        ? __('Enter your billing address to get a tax estimate.')
+                        : __('Enter your destination to get a shipping estimate.')); ?>
+                </p>
+
+                <?= $block->getChildHtml('magewire.cart.shipping.content'); ?>
+            </div>
+        </div>
+    </div>
+</div>
