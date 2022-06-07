@@ -1,0 +1,28 @@
+<?php
+/**
+ * Copyright © element119. All rights reserved.
+ * See LICENCE.txt for licence details.
+ */
+declare(strict_types=1);
+
+use Element119\MagewireCart\Magewire\Totals as CartTotalsMagewireComponent;
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+
+/** @var Escaper $escaper */
+/** @var Template $block */
+/** @var CartTotalsMagewireComponent $totalsComponent */
+$totalsComponent = $block->getMagewire();
+?>
+<div id="cart-totals"
+     class="cart-totals relative">
+    <?php foreach ($totalsComponent->totals as $totalType => $data): ?>
+        <?php if ($totalBlock = $block->getChildBlock($totalType)): ?>
+            <?= $totalBlock->setData($data)
+                ->setPriceDisplayModes($totalsComponent->priceDisplayModes)
+                ->setIsQuoteVirtual($totalsComponent->isQuoteVirtual())
+                ->setHasShippingMethod($totalsComponent->hasShippingMethod())
+                ->toHtml(); ?>
+        <?php endif; ?>
+    <?php endforeach; ?>
+</div>

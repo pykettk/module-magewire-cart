@@ -1,0 +1,69 @@
+<?php
+/**
+ * Copyright © element119. All rights reserved.
+ * See LICENCE.txt for licence details.
+ */
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+
+/** @var Escaper $escaper */
+/** @var Template $block */
+?>
+<?php if ($block->getPriceDisplayModes('isZeroTaxDisplayed') || (float)$block->getValue() > 0): ?>
+    <div x-data="{ taxSummaryOpen : false }">
+        <?php if (!((float)$block->getValue() > 0 && $block->getPriceDisplayModes('isFullTaxSummaryDisplayed'))): ?>
+            <div class="flex pb-2 my-2 border-b text-md lg:text-sm md:grid md:grid-cols-2 md:w-full border-container">
+                <div class="w-7/12 text-left md:w-auto">
+                    <?= $escaper->escapeHtml($block->getTitle()); ?>
+                </div>
+                <div class="w-5/12 text-right md:w-auto"
+                     x-text="hyva.formatPrice(<?= $escaper->escapeHtml($block->getValue()); ?>)">
+                </div>
+            </div>
+        <?php endif; ?>
+
+        <?php if ((float)$block->getValue() > 0 && $block->getPriceDisplayModes('isFullTaxSummaryDisplayed')): ?>
+            <div class="flex pb-2 my-2 border-b text-md lg:text-sm md:grid md:grid-cols-2 md:w-full border-container cursor-pointer"
+                 @click="taxSummaryOpen = !taxSummaryOpen">
+                <div class="w-7/12 text-left md:w-auto items-center">
+                    <?= $escaper->escapeHtml($block->getTitle()); ?>
+                </div>
+                <div class="w-5/12 text-right justify-end items-center md:w-auto flex">
+                    <span x-text="hyva.formatPrice(<?= $escaper->escapeHtml($block->getValue()); ?>)"></span>
+                    <span class="block transform rotate-180"
+                          :class="{ 'rotate-180' : taxSummaryOpen}">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             fill="none"
+                             viewBox="0 0 24 24"
+                             stroke="currentColor"
+                             class="w-6 h-6"
+                             width="25"
+                             height="25">
+                            <path stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  stroke-width="2"
+                                  d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </span>
+                </div>
+                <div x-show="taxSummaryOpen" class="col-span-2">
+                    <?php /** @TODO */ ?>
+                    <template x-for="(taxItem, index) in segment.extension_attributes.tax_grandtotal_details" :key="index">
+                        <div class="flex px-2 py-2 my-2 border-t border-b last:border-b-0 last:pb-0 text-md lg:text-sm md:grid md:grid-cols-2 md:w-full border-container">
+                            <div class="w-7/12 text-left md:w-auto">
+                                <template x-for="(taxRate, index) in taxItem.rates">
+                                    <div x-html="`${taxRate.title} (${taxRate.percent}%)`"></div>
+                                </template>
+                            </div>
+                            <div class="w-5/12 text-right md:w-auto"
+                                 x-text="hyva.formatPrice(taxItem.amount)"
+                            ></div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        <?php endif; ?>
+    </div>
+<?php endif; ?>

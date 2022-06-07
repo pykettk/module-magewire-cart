@@ -1,0 +1,74 @@
+<?php
+/**
+ * Copyright © element119. All rights reserved.
+ * See LICENCE.txt for licence details.
+ */
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+
+/** @var Escaper $escaper */
+/** @var Template $block */
+?>
+<?php /** @TODO */ ?>
+<?php if ($block->getPriceDisplayModes('reviewShippingDisplayMode') === 'both'
+    && !$block->getIsQuoteVirtual()
+    && $block->getHasShippingMethod()
+): ?>
+    <div x-data>
+        <div class="flex pb-2 my-2 border-b text-md lg:text-sm md:grid md:grid-cols-2 md:w-full border-container">
+            <div class="w-7/12 text-left md:w-auto">
+                <span>
+                    <?= $escaper->escapeHtml($block->getTitle()); ?>
+                    (<?= $escaper->escapeHtml(__('Excl. Tax')); ?>)
+                </span>
+            </div>
+            <div class="w-5/12 text-right md:w-auto"
+                 x-text="hyva.formatPrice(<?= $escaper->escapeHtml($block->getValue()); ?>)">
+            </div>
+        </div>
+
+        <div class="flex pb-2 my-2 border-b text-md lg:text-sm md:grid md:grid-cols-2 md:w-full border-container">
+            <div class="w-7/12 text-left md:w-auto">
+                <span>
+                    <?= $escaper->escapeHtml($block->getTitle()); ?>
+                    (<?= $escaper->escapeHtml(__('Incl. Tax')); ?>)
+                </span>
+            </div>
+            <div class="w-5/12 text-right md:w-auto"
+                 x-text="hyva.formatPrice(<?= $escaper->escapeHtml($block->getValueInclTax()); ?>)">
+            </div>
+        </div>
+    </div>
+<?php endif; ?>
+
+<?php if ($block->getPriceDisplayModes('reviewShippingDisplayMode') === 'excluding'
+    && !$block->getIsQuoteVirtual()
+    && $block->getHasShippingMethod()
+): ?>
+    <div x-data
+         class="flex pb-2 my-2 border-b text-md lg:text-sm md:grid md:grid-cols-2 md:w-full border-container">
+        <div class="w-7/12 text-left md:w-auto">
+            <?= $escaper->escapeHtml($block->getTitle()); ?>
+        </div>
+        <div class="w-5/12 text-right md:w-auto"
+             x-text="hyva.formatPrice(<?= $escaper->escapeHtml($block->getValue()); ?>)">
+        </div>
+    </div>
+<?php endif; ?>
+
+<?php if ($block->getPriceDisplayModes('reviewShippingDisplayMode') === 'including'
+    && !$block->getIsQuoteVirtual()
+    && $block->getHasShippingMethod()
+): ?>
+    <div x-data
+         class="flex pb-2 my-2 border-b text-md lg:text-sm md:grid md:grid-cols-2 md:w-full border-container">
+        <div class="w-7/12 text-left md:w-auto">
+            <?= $escaper->escapeHtml($block->getTitle()); ?>
+        </div>
+        <div class="w-5/12 text-right md:w-auto"
+             x-text="hyva.formatPrice(<?= $escaper->escapeHtml($block->getValueInclTax()); ?>)">
+        </div>
+    </div>
+<?php endif; ?>

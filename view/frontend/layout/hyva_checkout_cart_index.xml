@@ -46,6 +46,32 @@
                                 </arguments>
                             </block>
                         </block>
+
+                        <!-- Totals -->
+                        <block name="magewire.cart.totals"
+                               template="Element119_MagewireCart::cart/totals.phtml"
+                               after="magewire.cart.shipping">
+                            <arguments>
+                                <argument name="magewire" xsi:type="object">
+                                    Element119\MagewireCart\Magewire\Totals
+                                </argument>
+                            </arguments>
+
+                            <!--
+                            The rendering order of these children is set in Magento Admin:
+                            Stores > Configuration > Sales > Sales > Checkout Totals Sort Order
+                            -->
+                            <block name="discount"
+                                   template="Element119_MagewireCart::cart/totals/discount.phtml"/>
+                            <block name="grand_total"
+                                   template="Element119_MagewireCart::cart/totals/grand-total.phtml"/>
+                            <block name="shipping"
+                                   template="Element119_MagewireCart::cart/totals/shipping.phtml"/>
+                            <block name="subtotal"
+                                   template="Element119_MagewireCart::cart/totals/subtotal.phtml"/>
+                            <block name="tax"
+                                   template="Element119_MagewireCart::cart/totals/tax.phtml"/>
+                        </block>
                     </block>
                 </container>
             </block>

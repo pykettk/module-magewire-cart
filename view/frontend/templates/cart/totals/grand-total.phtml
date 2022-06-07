@@ -1,0 +1,50 @@
+<?php
+/**
+ * Copyright © element119. All rights reserved.
+ * See LICENCE.txt for licence details.
+ */
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+
+/** @var Escaper $escaper */
+/** @var Template $block */
+?>
+<?php if ($block->getPriceDisplayModes('includeTaxInGrandTotal')): ?>
+    <div x-data>
+        <div class="flex py-2 pt-6 my-2 mx-auto text-xl md:grid md:grid-cols-2 md:w-full border-b border-container">
+            <div class="w-7/12 font-semibold text-left md:w-auto">
+                <span>
+                    <?= $escaper->escapeHtml($block->getTitle()); ?>
+                    (<?= $escaper->escapeHtml(__('Incl. Tax')); ?>)
+                </span>
+            </div>
+            <div class="w-5/12 text-right md:w-auto"
+                 x-text="hyva.formatPrice(<?= $escaper->escapeHtml($block->getValueInclTax()); ?>)">
+            </div>
+        </div>
+
+        <div class="flex py-2 my-2 mx-auto mb-12 text-md md:grid md:grid-cols-2 md:w-full">
+            <div class="w-7/12 font-semibold text-left md:w-auto">
+                <span>
+                    <?= $escaper->escapeHtml($block->getTitle()); ?>
+                    (<?= $escaper->escapeHtml(__('Excl. Tax')); ?>)
+                </span>
+            </div>
+            <div class="w-5/12 text-right md:w-auto"
+                 x-text="hyva.formatPrice(<?= $escaper->escapeHtml($block->getValue()); ?>)">
+            </div>
+        </div>
+    </div>
+<?php else: ?>
+    <div x-data
+         class="flex py-2 pt-6 my-2 mx-auto mb-12 text-2xl md:grid md:grid-cols-2 md:w-full">
+        <div class="w-7/12 font-semibold text-left md:w-auto">
+            <?= $escaper->escapeHtml($block->getTitle()); ?>
+        </div>
+        <div class="w-5/12 text-right md:w-auto"
+             x-text="hyva.formatPrice(<?= $escaper->escapeHtml($block->getValue()); ?>)">
+        </div>
+    </div>
+<?php endif; ?>
