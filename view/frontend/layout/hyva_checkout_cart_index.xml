@@ -79,6 +79,7 @@
 
         <!-- Re-Use Hyvä Cart Elements -->
         <move element="checkout.cart.noitems" destination="magewire.cart" after="-"/>
+        <move element="checkout.cart.methods.bottom" destination="magewire.cart.summary" after="-"/>
 
         <!-- Remove Hyvä Cart Elements -->
         <referenceBlock name="checkout.cart" remove="true"/>
