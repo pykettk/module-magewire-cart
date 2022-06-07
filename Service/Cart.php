@@ -54,4 +54,13 @@ class Cart
     {
         $this->cartRepository->save($quote);
     }
+
+    /**
+     * @param CartInterface $quote
+     * @return void
+     */
+    public function deleteQuote(CartInterface $quote): void
+    {
+        $this->cartRepository->delete($quote);
+    }
 }

@@ -30,7 +30,7 @@ class Clear extends Component
     public function execute(): void
     {
         if ($quote = $this->cartService->getQuote()) {
-            $this->cartService->saveQuote($quote->removeAllItems());
+            $this->cartService->deleteQuote($quote);
         }
     }
 }
