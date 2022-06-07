@@ -17,19 +17,49 @@
                    cacheable="false">
                 <container name="magewire.cart.content">
                     <!-- Cart Items -->
-                    <block name="magewire.cart.items"
-                           class="Magento\Checkout\Block\Cart\Grid"
-                           template="Element119_MagewireCart::cart/items.phtml">
-                        <arguments>
-                            <argument name="magewire" xsi:type="object">
-                                Element119\MagewireCart\Magewire\Items
-                            </argument>
-                        </arguments>
+                    <container name="magewire.cart.items"
+                               htmlTag="div"
+                               htmlClass="w-full lg:w-3/4 float-left lg:order-1 lg:pr-8">
+                        <block name="magewire.cart.items.content"
+                               class="Magento\Checkout\Block\Cart\Grid"
+                               template="Element119_MagewireCart::cart/items.phtml">
+                            <arguments>
+                                <argument name="magewire" xsi:type="object">
+                                    Element119\MagewireCart\Magewire\Items
+                                </argument>
+                            </arguments>
 
-                        <block name="magewire.cart.item"
-                               class="Magento\Checkout\Block\Cart\Item\Renderer"
-                               template="Element119_MagewireCart::cart/item/default.phtml"/>
-                    </block>
+                            <block name="magewire.cart.item"
+                                   class="Magento\Checkout\Block\Cart\Item\Renderer"
+                                   template="Element119_MagewireCart::cart/item/default.phtml"/>
+                        </block>
+
+                        <!-- Cart Actions -->
+                        <container name="magewire.cart.actions"
+                                   htmlTag="div"
+                                   htmlClass="cart actions flex flex-col sm:flex-row justify-end gap-4 items-center my-4">
+                            <!-- Clear Cart -->
+                            <block name="magewire.cart.action.clear"
+                                   template="Element119_MagewireCart::cart/action/clear.phtml"
+                                   ifconfig="checkout/cart/enable_clear_shopping_cart">
+                                <arguments>
+                                    <argument name="magewire" xsi:type="object">
+                                        Element119\MagewireCart\Magewire\Action\Clear
+                                    </argument>
+                                </arguments>
+                            </block>
+
+                            <!-- Update Cart -->
+                            <block name="magewire.cart.action.update"
+                                   template="Element119_MagewireCart::cart/action/update.phtml">
+                                <arguments>
+                                    <argument name="magewire" xsi:type="object">
+                                        Element119\MagewireCart\Magewire\Action\Update
+                                    </argument>
+                                </arguments>
+                            </block>
+                        </container>
+                    </container>
 
                     <!-- Cart Summary -->
                     <block name="magewire.cart.summary" template="Element119_MagewireCart::cart/summary.phtml">

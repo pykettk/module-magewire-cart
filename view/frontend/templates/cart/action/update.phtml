@@ -1,0 +1,26 @@
+<?php
+/**
+ * Copyright © element119. All rights reserved.
+ * See LICENCE.txt for licence details.
+ */
+declare(strict_types=1);
+
+use Element119\MagewireCart\Magewire\Action\Update as UpdateCartMagewireComponent;
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+
+/** @var Escaper $escaper */
+/** @var Template $block */
+/** @var UpdateCartMagewireComponent $updateCartComponent */
+$updateCartComponent = $block->getMagewire();
+?>
+<div x-data>
+    <button type="submit"
+            name="update_cart_action"
+            value="update_qty"
+            title="<?= $escaper->escapeHtmlAttr(__('Update Shopping Cart')); ?>"
+            class="action update btn btn-secondary"
+            wire:click="execute">
+        <?= $escaper->escapeHtml(__('Update Shopping Cart')); ?>
+    </button>
+</div>

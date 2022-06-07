@@ -1,0 +1,35 @@
+<?php
+/**
+ * Copyright © element119. All rights reserved.
+ * See LICENCE.txt for licence details.
+ */
+declare(strict_types=1);
+
+use Element119\MagewireCart\Magewire\Action\Clear as ClearCartMagewireComponent;
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\Modal;
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+
+/** @var Escaper $escaper */
+/** @var Template $block */
+/** @var ClearCartMagewireComponent $clearCartComponent */
+$clearCartComponent = $block->getMagewire();
+
+/** @var ViewModelRegistry $viewModels */
+/** @var Modal $modelViewModel */
+$modalViewModel = $viewModels->require(Modal::class);
+?>
+<div x-data="hyva.modal()">
+    <?= /** @noEscape */ ($confirmation = $modalViewModel->confirm(__('Are you sure?'))
+        ->withDetails(__('Are you sure you want to remove all items from your shopping cart?'))); ?>
+    <button id="empty_cart_button"
+            @click="<?= $confirmation->getShowJs(); ?>.then(result => result && $wire.execute())"
+            type="button"
+            title="<?= $escaper->escapeHtmlAttr(__('Clear Shopping Cart')); ?>"
+            class="action clear">
+        <span>
+            <?= $escaper->escapeHtml(__('Clear Shopping Cart')); ?>
+        </span>
+    </button>
+</div>
