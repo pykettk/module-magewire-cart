@@ -24,8 +24,8 @@ class Shipping extends Component
     /** @var ShippingService */
     private ShippingService $shippingService;
 
-    /** @var Rate */
-    private Rate $selectedShippingRate;
+    /** @var Rate|null */
+    private ?Rate $selectedShippingRate;
 
     /** Magewire Component Properties */
     public array $countries = [];
@@ -144,8 +144,7 @@ class Shipping extends Component
     {
         if (!($quote = $this->cartService->getQuote())
             || !$this->selectedCountryId
-            || !($this->regions && $this->selectedRegionId)
-            || !$this->postcode
+            || !($this->postcode || ($this->region || ($this->regions && $this->selectedRegionId)))
         ) {
             return;
         }
@@ -157,7 +156,6 @@ class Shipping extends Component
             ->setPostcode($this->postcode);
 
         $quote->collectTotals();
-        $quote->getShippingAddress()->setCollectShippingRates(true);
         $quote->getShippingAddress()->collectShippingRates();
 
         $this->shippingMethods = [];
