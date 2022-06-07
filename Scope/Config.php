@@ -13,6 +13,7 @@ use Magento\Store\Model\ScopeInterface;
 class Config
 {
     private const XML_PATH_DEFAULT_COUNTRY = 'general/country/default';
+    private const XML_PATH_TOTALS_SORT = 'sales/totals_sort';
 
     /** @var ScopeConfigInterface */
     private ScopeConfigInterface $scopeConfig;
@@ -34,6 +35,19 @@ class Config
     {
         return $this->scopeConfig->getValue(
             self::XML_PATH_DEFAULT_COUNTRY,
+            ScopeInterface::SCOPE_STORE,
+            $scopeCode
+        );
+    }
+
+    /**
+     * @param int|string|null $scopeCode
+     * @return array
+     */
+    public function getTotalsSortOrder($scopeCode = null): array
+    {
+        return $this->scopeConfig->getValue(
+            self::XML_PATH_TOTALS_SORT,
             ScopeInterface::SCOPE_STORE,
             $scopeCode
         );
