@@ -59,6 +59,18 @@
                                 </arguments>
                             </block>
                         </container>
+
+                        <!-- Coupon -->
+                        <block name="magewire.cart.coupon" template="Element119_MagewireCart::cart/coupon.phtml">
+                            <block name="magewire.cart.coupon.input"
+                                   template="Element119_MagewireCart::cart/action/coupon-input.phtml">
+                                <arguments>
+                                    <argument name="magewire" xsi:type="object">
+                                        Element119\MagewireCart\Magewire\Action\Coupon
+                                    </argument>
+                                </arguments>
+                            </block>
+                        </block>
                     </container>
 
                     <!-- Cart Summary -->

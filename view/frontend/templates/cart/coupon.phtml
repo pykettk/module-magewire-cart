@@ -1,0 +1,49 @@
+<?php
+/**
+ * Copyright © element119. All rights reserved.
+ * See LICENCE.txt for licence details.
+ */
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+
+/** @var Escaper $escaper */
+/** @var Template $block */
+?>
+<div x-data="{ showCouponCode: false }"
+     class="coupon-form pt-6">
+    <div class="mx-auto md:mx-0">
+        <div class="text-left">
+            <span id="discount-form-toggle"
+                  @click="showCouponCode = !showCouponCode"
+                  class="cursor-pointer text-primary-lighter select-none whitespace-nowrap">
+                <span class="underline">
+                    <?= $escaper->escapeHtml(__('Apply Discount Code')); ?>
+                </span>
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     fill="none"
+                     class="w-4 h-4 inline-block ml-2"
+                     viewBox="0 0 24 24"
+                     stroke="currentColor">
+                    <path x-show="!showCouponCode"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M19 9l-7 7-7-7"/>
+                    <path x-show="showCouponCode"
+                          x-cloak
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M5 15l7-7 7 7"/>
+                </svg>
+            </span>
+        </div>
+    </div>
+    <div x-cloak
+         x-show="showCouponCode"
+         class="my-4 card">
+        <?= $block->getChildHtml('magewire.cart.coupon.input'); ?>
+    </div>
+</div>
