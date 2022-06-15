@@ -63,4 +63,12 @@ class Cart
     {
         $this->cartRepository->delete($quote);
     }
+
+    /**
+     * @return bool
+     */
+    public function hasCouponCode(): bool
+    {
+        return $this->getQuote() ? $this->getQuote()->hasCouponCode() : false;
+    }
 }
