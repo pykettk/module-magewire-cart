@@ -21,7 +21,7 @@ use Magento\Framework\View\Element\Template;
                 </span>
             </div>
             <div class="w-5/12 text-right md:w-auto"
-                 x-text="hyva.formatPrice(<?= $escaper->escapeHtml($block->getValue()); ?>)">
+                 x-text="hyva.formatPrice(<?= $escaper->escapeHtml($block->getValueExclTax()); ?>)">
             </div>
         </div>
 
@@ -46,7 +46,7 @@ use Magento\Framework\View\Element\Template;
             <?= $escaper->escapeHtml($block->getTitle()); ?>
         </div>
         <div class="w-5/12 text-right md:w-auto"
-             x-text="hyva.formatPrice(<?= $escaper->escapeHtml($block->getValue()); ?>)">
+             x-text="hyva.formatPrice(<?= $escaper->escapeHtml($block->getValueExclTax()); ?>)">
         </div>
     </div>
 <?php endif; ?>

@@ -10,6 +10,7 @@ namespace Element119\MagewireCart\Magewire;
 use Element119\MagewireCart\Scope\Config;
 use Element119\MagewireCart\Service\Cart as CartService;
 use Magento\Checkout\Model\CompositeConfigProvider as CheckoutConfigProvider;
+use Magento\Quote\Api\Data\TotalsInterface;
 use Magewirephp\Magewire\Component;
 
 class Totals extends Component
@@ -49,14 +50,26 @@ class Totals extends Component
      */
     public function mount(): void
     {
-        $totalsSortOrder = $this->config->getTotalsSortOrder();
-        $checkoutConfig = $this->checkoutConfigProvider->getConfig();
-        $totalsData = $checkoutConfig['totalsData'];
-        $totalsSegments = $totalsData ? $totalsData['total_segments'] : [];
+        $this->totals = $this->collectTotals();
+    }
 
-        if (!$checkoutConfig || !$totalsSortOrder || !$totalsData || !$totalsSegments) {
-            return;
+    /**
+     * Get quote totals with tax and sort order information.
+     *
+     * @return array|array[]
+     */
+    public function collectTotals(): array
+    {
+        $totals = [];
+
+        if (!($quote = $this->cartService->getQuote())) {
+            return $totals;
         }
+
+        $checkoutConfig = $this->checkoutConfigProvider->getConfig();
+        $quoteTotals = $quote->getTotals();
+        $totalsSortOrder = $this->config->getTotalsSortOrder();
+        $totalsData = $checkoutConfig['totalsData'];
 
         $this->priceDisplayModes = [
             'includeTaxInGrandTotal' => $checkoutConfig['includeTaxInGrandTotal'],
@@ -65,20 +78,48 @@ class Totals extends Component
             'reviewTotalsDisplayMode' => $checkoutConfig['reviewTotalsDisplayMode'],
         ];
 
-        asort($totalsSortOrder);
+        $totals = [
+            'subtotal' => [
+                'title' => $quoteTotals[TotalsInterface::KEY_SUBTOTAL]->getTitle()->getText(),
+                'value_incl_tax' => (float)$totalsData[TotalsInterface::KEY_SUBTOTAL_INCL_TAX],
+                'value_excl_tax' => (float)$totalsData[TotalsInterface::KEY_SUBTOTAL],
+                'sort_order' => $totalsSortOrder[TotalsInterface::KEY_SUBTOTAL],
+            ],
+            'shipping' => [
+                'title' => $quoteTotals['shipping']->getTitle()->getText(),
+                'value_incl_tax' => (float)$totalsData[TotalsInterface::KEY_SHIPPING_INCL_TAX],
+                'value_excl_tax' => (float)$totalsData[TotalsInterface::KEY_SHIPPING_AMOUNT],
+                'sort_order' => $totalsSortOrder['shipping'],
+            ],
+            'tax' => [
+                'title' => $quoteTotals['tax']->getTitle()->getText(),
+                'value' => (float)$totalsData[TotalsInterface::KEY_TAX_AMOUNT],
+                'sort_order' => $totalsSortOrder['tax'],
+            ],
+            'grand_total' => [
+                'title' => $quoteTotals[TotalsInterface::KEY_GRAND_TOTAL]->getTitle()->getText(),
+                'value_incl_tax' => (float)($totalsData[TotalsInterface::KEY_GRAND_TOTAL] + $totalsData[TotalsInterface::KEY_TAX_AMOUNT]),
+                'value_excl_tax' => (float)$totalsData[TotalsInterface::KEY_GRAND_TOTAL],
+                'sort_order' => $totalsSortOrder[TotalsInterface::KEY_GRAND_TOTAL],
+            ],
+        ];
 
-        foreach ($totalsSortOrder as $totalType => $sortOrder) {
-            foreach ($totalsSegments as $segment) {
-                if ($totalType === $segment['code']) {
-                    $this->totals[$totalType] = [
-                        'title' => $segment['title'],
-                        'value' => $totalsData[$totalType] ?? $totalsData["{$totalType}_amount"],
-                        'value_incl_tax' => $segment['value'],
-                        'extension_attributes' => $segment['extension_attributes'],
+        if (isset($totalsData['total_segments']) && (float)$totalsData['discount_amount']) {
+            foreach ($totalsData['total_segments'] as $totalSegment) {
+                if ($totalSegment['code'] === 'discount') {
+                    $totals['discount'] = [
+                        'title' => $totalSegment['title'],
+                        'value' => (float)$totalsData[TotalsInterface::KEY_DISCOUNT_AMOUNT],
+                        'sort_order' => $totalsSortOrder['discount'],
                     ];
                 }
             }
         }
+
+        // sort by sort order for display purposes
+        uasort($totals, function ($a, $b) { return $a['sort_order'] <=> $b['sort_order']; });
+
+        return $totals;
     }
 
     /**
