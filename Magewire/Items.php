@@ -62,6 +62,7 @@ class Items extends Component
             $quote->getItemById($itemId)->setQty($newQty);
             $this->cartService->saveQuote($quote);
             $this->items[$itemId]['qty'] = $newQty;
+            $this->emit('updateQty');
         }
     }
 
@@ -79,6 +80,7 @@ class Items extends Component
 
         $quote->removeItem($itemId);
         $this->cartService->saveQuote($quote);
+        $this->emit('cartItemRemoved');
         unset($this->items[$itemId]);
 
         if (!$this->items) {

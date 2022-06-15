@@ -69,6 +69,7 @@ class Coupon extends Component
 
         $quote->setCouponCode($this->couponCode);
         $this->cartService->saveQuote($quote);
+        $this->emit('applyCoupon');
         $this->isCouponApplied = true;
         $this->dispatchSuccessMessage(__('Successfully applied coupon: %1', $this->couponCode));
     }
@@ -86,6 +87,7 @@ class Coupon extends Component
 
         $quote->setCouponCode('');
         $this->cartService->saveQuote($quote);
+        $this->emit('removeCoupon');
         $this->dispatchSuccessMessage(__('Successfully removed coupon: %1', $this->couponCode));
         $this->reset(['couponCode', 'isCouponApplied']);
     }

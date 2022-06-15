@@ -25,6 +25,14 @@ class Totals extends Component
     private CheckoutConfigProvider $checkoutConfigProvider;
 
     /** Magewire Component Properties */
+    protected $listeners = [
+        'applyCoupon' => 'collectTotals',
+        'cartItemRemoved' => 'collectTotals',
+        'removeCoupon' => 'collectTotals',
+        'updateCart' => 'collectTotals',
+        'updateQty' => 'collectTotals',
+    ];
+
     public array $totals = [];
     public array $priceDisplayModes = [];
 
@@ -50,20 +58,18 @@ class Totals extends Component
      */
     public function mount(): void
     {
-        $this->totals = $this->collectTotals();
+        $this->collectTotals();
     }
 
     /**
      * Get quote totals with tax and sort order information.
      *
-     * @return array|array[]
+     * @return void
      */
-    public function collectTotals(): array
+    public function collectTotals(): void
     {
-        $totals = [];
-
         if (!($quote = $this->cartService->getQuote())) {
-            return $totals;
+            return;
         }
 
         $checkoutConfig = $this->checkoutConfigProvider->getConfig();
@@ -78,7 +84,7 @@ class Totals extends Component
             'reviewTotalsDisplayMode' => $checkoutConfig['reviewTotalsDisplayMode'],
         ];
 
-        $totals = [
+        $this->totals = [
             'subtotal' => [
                 'title' => $quoteTotals[TotalsInterface::KEY_SUBTOTAL]->getTitle()->getText(),
                 'value_incl_tax' => (float)$totalsData[TotalsInterface::KEY_SUBTOTAL_INCL_TAX],
@@ -107,7 +113,7 @@ class Totals extends Component
         if (isset($totalsData['total_segments']) && (float)$totalsData['discount_amount']) {
             foreach ($totalsData['total_segments'] as $totalSegment) {
                 if ($totalSegment['code'] === 'discount') {
-                    $totals['discount'] = [
+                    $this->totals['discount'] = [
                         'title' => $totalSegment['title'],
                         'value' => (float)$totalsData[TotalsInterface::KEY_DISCOUNT_AMOUNT],
                         'sort_order' => $totalsSortOrder['discount'],
@@ -117,9 +123,7 @@ class Totals extends Component
         }
 
         // sort by sort order for display purposes
-        uasort($totals, function ($a, $b) { return $a['sort_order'] <=> $b['sort_order']; });
-
-        return $totals;
+        uasort($this->totals, function ($a, $b) { return $a['sort_order'] <=> $b['sort_order']; });
     }
 
     /**
