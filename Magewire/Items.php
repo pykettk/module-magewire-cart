@@ -78,14 +78,15 @@ class Items extends Component
             return;
         }
 
-        $quote->removeItem($itemId);
-        $this->cartService->saveQuote($quote);
-        $this->emit('cartItemRemoved');
         unset($this->items[$itemId]);
 
         if (!$this->items) {
-            $this->switchTemplate('Magento_Checkout::cart/noItems.phtml');
+            $this->redirect('/checkout/cart');
         }
+
+        $quote->removeItem($itemId);
+        $this->cartService->saveQuote($quote);
+        $this->emit('cartItemRemoved');
     }
 
     /**

@@ -31,6 +31,7 @@ class Clear extends Component
     {
         if ($quote = $this->cartService->getQuote()) {
             $this->cartService->deleteQuote($quote);
+            $this->redirect('/checkout/cart');
         }
     }
 }
