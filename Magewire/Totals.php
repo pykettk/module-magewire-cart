@@ -29,6 +29,7 @@ class Totals extends Component
         'applyCoupon' => 'collectTotals',
         'cartItemRemoved' => 'collectTotals',
         'removeCoupon' => 'collectTotals',
+        'shippingMethodSelected' => 'collectTotals',
         'updateCart' => 'collectTotals',
         'updateQty' => 'collectTotals',
     ];

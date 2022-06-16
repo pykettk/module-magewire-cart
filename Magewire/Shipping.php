@@ -181,6 +181,7 @@ class Shipping extends Component
                 $quote->getShippingAddress()->setCollectShippingRates(true);
                 $quote->collectTotals();
                 $this->cartService->saveQuote($quote);
+                $this->emit('shippingMethodSelected');
             }
         }
     }
