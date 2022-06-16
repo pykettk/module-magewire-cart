@@ -10,7 +10,8 @@ namespace Element119\MagewireCart\Magewire;
 use Element119\MagewireCart\Scope\Config;
 use Element119\MagewireCart\Service\Cart as CartService;
 use Element119\MagewireCart\Service\Shipping as ShippingService;
-use Magento\Quote\Model\Quote\Address\Rate;
+use Magento\Quote\Api\ShipmentEstimationInterface;
+use Magento\Quote\Api\Data\ShippingMethodInterface;
 use Magewirephp\Magewire\Component;
 
 class Shipping extends Component
@@ -24,8 +25,8 @@ class Shipping extends Component
     /** @var ShippingService */
     private ShippingService $shippingService;
 
-    /** @var Rate|null */
-    private ?Rate $selectedShippingRate;
+    /** @var ShipmentEstimationInterface */
+    private ShipmentEstimationInterface $shipmentEstimator;
 
     /** Magewire Component Properties */
     public array $countries = [];
@@ -44,15 +45,18 @@ class Shipping extends Component
      * @param Config $config
      * @param CartService $cartService
      * @param ShippingService $shippingService
+     * @param ShipmentEstimationInterface $shipmentEstimator
      */
     public function __construct(
         Config $config,
         CartService $cartService,
-        ShippingService $shippingService
+        ShippingService $shippingService,
+        ShipmentEstimationInterface $shipmentEstimator
     ) {
         $this->config = $config;
         $this->cartService = $cartService;
         $this->shippingService = $shippingService;
+        $this->shipmentEstimator = $shipmentEstimator;
     }
 
     /**
@@ -155,24 +159,29 @@ class Shipping extends Component
             ->setRegion($this->region)
             ->setPostcode($this->postcode);
 
-        $quote->collectTotals();
-        $quote->getShippingAddress()->collectShippingRates();
+        $shippingMethods = $this->shipmentEstimator->estimateByExtendedAddress(
+            (int)$quote->getId(),
+            $quote->getShippingAddress()
+        );
 
         $this->shippingMethods = [];
 
-        /** @var Rate $shippingRate */
-        foreach ($quote->getShippingAddress()->getAllShippingRates() as $shippingRate) {
-            $this->shippingMethods[$shippingRate->getCode()] = $shippingRate->getData();
+        /** @var ShippingMethodInterface $shippingRate */
+        foreach ($shippingMethods as $shippingRate) {
+            $this->shippingMethods[$shippingRate->getMethodCode()] = [
+                'method_title' => $shippingRate->getMethodTitle(),
+                'method' => $shippingRate->getMethodCode(),
+                'carrier_title' => $shippingRate->getCarrierTitle(),
+                'price_incl_tax' => $shippingRate->getPriceInclTax(),
+                'price_excl_tax' => $shippingRate->getPriceExclTax(),
+            ];
 
-            if ($this->selectedShippingMethod === $shippingRate->getCode()) {
-                $this->selectedShippingRate = $shippingRate;
-
-                $quote->getShippingAddress()
-                    ->setShippingMethod($this->selectedShippingMethod)
-                    ->addShippingRate($this->selectedShippingRate);
+            if ($this->selectedShippingMethod === $shippingRate->getMethodCode()) {
+                /** @TODO: Shipping is not being set on the quote */
+                $quote->getShippingAddress()->setCollectShippingRates(true);
+                $quote->collectTotals();
+                $this->cartService->saveQuote($quote);
             }
         }
-
-        $this->cartService->saveQuote($quote);
     }
 }
